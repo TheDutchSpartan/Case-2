@@ -1,6 +1,5 @@
 streamlit>=1.26.0
-requests
-pandas
-numpy
-plotly.graph_objects
-plotly.express
+requests>=2.32.3 
+pandas>=2.2.3
+plotly.graph_objects>=5.24.1
+plotly.express>=5.24.1 
