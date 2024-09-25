@@ -1,7 +1,7 @@
 streamlit>=1.26.0
 requests
 pandas
-matplotlib.pyplot
+matplotlib
 seaborn
 numpy
 plotly.graph_objects
