@@ -1,16 +1,11 @@
-import streamlit as st
-import requests
-import pandas as pd
-import matplotlib
-import matplotlib.pyplot as plt
-import plotly
-import plotly.graph_objects as go
+import streamlit as st 
+import requests 
+import pandas as pd 
+import matplotlib 
+import matplotlib.pyplot as plt 
+import plotly 
+import plotly.graph_objects as go 
 import plotly.express as px
-#1
-st.title('🎈 App Name')
-
-st.write('Hello world!')
-
 
 url = "https://covid-19-statistics.p.rapidapi.com/reports"
 
@@ -34,6 +29,8 @@ country_names = {
     'LTU': 'Litouwen','LUX': 'Luxemburg','MLT': 'Malta','NLD': 'Nederland','AUT': 'Oostenrijk','POL': 'Polen','PRT': 'Portugal',
     'ROU': 'Roemenië','SVN': 'Slovenië','SVK': 'Slovakije','ESP': 'Spanje','CZE': 'Tsjechië','SWE': 'Zweden'
 }
+
+# ======================================================================================================================================== #
 
 EU_data = []
 for country_code in country_code_EU:
@@ -98,50 +95,13 @@ fig.update_layout(
 
 st.plotly_chart(fig)
 
+# =================================================================================================================================== #
+
 covid_df_EU_con_diff = covid_df_EU[['province', 'country_name', 'confirmed', 'confirmed_diff']].copy()
 covid_df_EU_con_diff['2023-03-08'] = covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['confirmed_diff']
 covid_df_EU_con_diff['confirmed_increase_%'] = (((covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['2023-03-08']) / covid_df_EU_con_diff['2023-03-08']) * 100)
 covid_df_EU_con_diff.rename(columns={'confirmed':'2023-03-09'}, inplace=True)
 covid_df_EU_con_diff = covid_df_EU_con_diff.reindex(columns=['country_name', 'province', 'confirmed_diff','confirmed_increase_%', '2023-03-08', '2023-03-09',])
-
-countries = covid_df_EU_con_diff['country_name'].unique()
-selected_country = st.selectbox('Selecteer een land: ', countries)
-
-filtered_country_df = covid_df_EU_con_diff[covid_df_EU_con_diff['country_name'] == selected_country]
-
-provinces = covid_df_EU_con_diff['province'].unique()
-selected_province = st.select_slider('Selecteer een provincie: ', options=provinces)
-
-filtered_province_df = filtered_country_df[filtered_country_df['province'] == selected_province]
-
-dates = ['2023-03-08', '2023-03-09']
-cases = filtered_province_df[['2023-03-08', '2023-03-09']].values.flatten()
-
-fig_bar = go.Figure()
-
-fig_bar.add_trace(go.Bar(
-    x=[dates[0]], 
-    y=[cases[0]],
-    name='Gediagnosticeerde Gevallen 2023-03-08',
-    marker_color='blue'
-))
-
-fig_bar.add_trace(go.Bar(
-    x=[dates[1]], 
-    y=[cases[1]],
-    name='Gediagnosticeerde Gevallen 2023-03-09',
-    marker_color='orange'
-))
-
-fig_bar.update_layout(
-    title=f'COVID-19 Gevallen in {selected_province}, {selected_country}',
-    xaxis_title='Datum',
-    yaxis_title='Gediagnosticeerde Gevallen',
-    barmode='group',  
-    template='plotly_white'  
-)
-
-st.plotly_chart(fig_bar)
 
 covid_df_EU_dea_diff = covid_df_EU[['province', 'country_name', 'deaths', 'deaths_diff']].copy()
 covid_df_EU_dea_diff['2023-03-08'] = covid_df_EU_dea_diff['deaths'] - covid_df_EU_dea_diff['deaths_diff']
@@ -179,12 +139,91 @@ selected_province_checkbox = st.selectbox('Selecteer een provincie', filtered_df
 province_data_checkbox = filtered_df[filtered_df['province'] == selected_province_checkbox]
 
 if not province_data_checkbox.empty:
-    metrics = ['active_increase_%', 'confirmed_increase_%', 'deaths_increase_%']
-    values = province_data_checkbox[metrics].values[0]
+    # Dutch translations for the x-axis labels
+    labels = ['Actieve Toename (%)', 'Gediagnosticeerde Toename (%)', 'Sterfgevallen Toename (%)']
+    values = province_data_checkbox[['active_increase_%', 'confirmed_increase_%', 'deaths_increase_%']].values[0]
 
-    fig_check, ax = plt.subplots()
-    ax.bar(metrics, values, color=['blue', 'orange', 'red'])
-    ax.set_title(f'Toename in Percentage voor {selected_province_checkbox}')
-    ax.set_ylabel('Percentage')
+    fig_check = go.Figure()
 
-    st.pyplot(fig_check)
+    fig_check.add_trace(go.Bar(
+        x=labels, 
+        y=values,
+        marker_color=['blue', 'orange', 'red']
+    ))
+
+    fig_check.update_layout(
+        title=f'Toename in Percentage voor {selected_province_checkbox}',
+        xaxis_title='Meting',
+        yaxis_title='Percentage',
+        template='plotly_white',
+        showlegend=False
+    )
+
+    if selected_province_checkbox == "":
+        display_name = selected_country_checkbox
+    else:
+        display_name = selected_province_checkbox
+
+    if np.all(values == 0):
+        st.write(f'Geen toename van covid-19 percentages bekend in {display_name} tussen de dagen 08-03-2023 en 09-03-2023')
+    else:
+        st.plotly_chart(fig_check)
+
+# ================================================================================================================================== #
+covid_df_EU_slider = covid_df_EU[['country_name', 'province']].merge(
+    covid_df_EU_con_diff[['province', 'country_name', '2023-03-08', '2023-03-09']],
+    on=['province', 'country_name'],
+    how='inner').merge(
+        covid_df_EU_dea_diff[['province', 'country_name', '2023-03-08', '2023-03-09']],
+        on=['province', 'country_name'],
+        how='inner',
+        suffixes=('_con', '_dea')
+    )
+
+covid_df_EU_slider = covid_df_EU_slider[~((covid_df_EU_slider['country_name'] == 'Frankrijk') & (covid_df_EU_slider['province'] == ""))]
+
+fig_scat = go.Figure()
+
+fig_scat.add_trace(go.Scatter(
+    x=covid_df_EU_slider['2023-03-08_con'],
+    y=covid_df_EU_slider['2023-03-08_dea'],
+    mode='markers',
+    marker=dict(color=covid_df_EU_slider['country_name'].astype('category').cat.codes),  
+    text=covid_df_EU_slider['country_name'],  
+    name='2023-03-08'
+))
+
+fig_scat.add_trace(go.Scatter(
+    x=covid_df_EU_slider['2023-03-09_con'],
+    y=covid_df_EU_slider['2023-03-09_dea'],
+    mode='markers',
+    marker=dict(color=covid_df_EU_slider['country_name'].astype('category').cat.codes),
+    text=covid_df_EU_slider['country_name'],
+    name='2023-03-09',
+    visible=False 
+))
+
+fig_scat.update_layout(
+    title='Aantal gediagnosticeerde uitgezet tegen het aantal sterfgevallen',
+    xaxis_title='Aantal gediagnosticeerde',
+    yaxis_title='Aantal sterfgevallen',
+    template='plotly_white',
+    sliders=[{
+        'steps': [
+            {
+                'method': 'update',
+                'label': '2023-03-08',
+                'args': [{'visible': [True, False]}, {'title': 'Data van 2023-03-08'}]
+            },
+            {
+                'method': 'update',
+                'label': '2023-03-09',
+                'args': [{'visible': [False, True]}, {'title': 'Data van 2023-03-09'}]
+            }
+        ],
+        'currentvalue': {'prefix': 'Datum: '},
+        'pad': {'t': 50} 
+    }]
+)
+
+st.plotly_chart(fig_scat)
