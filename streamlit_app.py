@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import plotly 
 import plotly.graph_objects as go 
 import plotly.express as px
+import numpy as np
 
 url = "https://covid-19-statistics.p.rapidapi.com/reports"
 
