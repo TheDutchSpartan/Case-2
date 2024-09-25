@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import plotly
 import plotly.graph_objects as go
 import plotly.express as px
 st.title('🎈 App Name')
