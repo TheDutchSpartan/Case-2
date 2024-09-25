@@ -1,1 +1,9 @@
 streamlit>=1.26.0
+
+requests
+pandas
+matplotlib.pyplot as plt
+seaborn as sns
+numpy as np
+plotly.graph_objects as go
+plotly.express as px
