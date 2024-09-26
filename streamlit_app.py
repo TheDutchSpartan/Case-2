@@ -261,7 +261,6 @@ fig_scat.add_trace(go.Scatter(
     name='2023-03-09',
     visible=False # Standaard onzichtbaar maken van deze data
 ))
-))
 # Layout en slider voor het wisselen tussen 8 en 9 maart
 fig_scat.update_layout(
     title='Aantal gediagnosticeerde uitgezet tegen het aantal sterfgevallen',
