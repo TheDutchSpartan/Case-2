@@ -57,13 +57,13 @@ for country_code in country_code_EU:
 covid_df_EU = pd.DataFrame(EU_data)
 covid_df_EU.set_index('country', inplace = True)
 
-# Checking for missing values in the dataset
+# Zoekt naar missende data
 missing_data = covid_df_EU.isnull().sum()
 missing_data_count = missing_data.sum()
 
-# Display missing data or inform if there are none
+# Toont missende data
 st.subheader('Missing Data Overview')
-
+#Boolean statement voor weergave betreft missende waardes
 if missing_data_count == 0:
     st.write('No missing data found in the dataset. All fields are complete.')
 else:
@@ -264,3 +264,14 @@ fig_scat.update_layout(
 )
 
 st.plotly_chart(fig_scat)
+
+# Tekst omtrent data kwaliteit
+st.subheader('Discussie over Data Kwaliteit')
+st.write("""
+De dataset die in deze analyse is gebruikt, bevat geen ontbrekende waarden, wat betekent dat alle statistieken volledig zijn vertegenwoordigd. Dit vormt een solide basis voor een nauwkeurige analyse van COVID-19 gevallen en sterfgevallen.
+
+Daarnaast zijn mogelijke uitschieters gemarkeerd tijdens de verkenning, wat kan duiden op provincies met ongewoon hoge of lage aantallen gevallen. Deze uitschieters zijn opgenomen in de analyse, maar worden gemarkeerd voor verdere beoordeling.
+
+Door de volledigheid en betrouwbaarheid van de data te waarborgen, zullen de inzichten die uit dit dashboard worden getrokken waarschijnlijk de ware COVID-19 trends in de Europese regio’s weerspiegelen.
+""")
+
