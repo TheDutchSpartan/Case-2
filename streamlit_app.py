@@ -62,12 +62,12 @@ missing_data = covid_df_EU.isnull().sum()
 missing_data_count = missing_data.sum()
 
 # Toont missende data
-st.subheader('Missing Data Overview')
+st.subheader('Missende Data Overzicht')
 #Boolean statement voor weergave betreft missende waardes
 if missing_data_count == 0:
-    st.write('No missing data found in the dataset. All fields are complete.')
+    st.write('Geen missende data gevonden. Alle onderdelen zijn compleet.')
 else:
-    st.write('Here is an overview of missing values in the dataset:')
+    st.write(' een overzicht van de missende data in de dataset:')
     st.dataframe(missing_data)
 
 covid_df_EU['province'] = covid_df_EU['region'].apply(lambda x: x.get('province'))
