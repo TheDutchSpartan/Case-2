@@ -57,6 +57,19 @@ for country_code in country_code_EU:
 covid_df_EU = pd.DataFrame(EU_data)
 covid_df_EU.set_index('country', inplace = True)
 
+# kijkt naar missende data
+missing_data = covid_df_EU.isnull().sum()
+
+# vult missende diagnoses en sterfte gevallen met 0
+covid_df_EU['confirmed'] = covid_df_EU['confirmed'].fillna(0)
+covid_df_EU['deaths'] = covid_df_EU['deaths'].fillna(0)
+
+# laat missende data zien
+st.subheader('Missing Data Overview')
+st.write('Here is an overview of missing values in the dataset:')
+st.dataframe(missing_data)
+
+
 covid_df_EU['province'] = covid_df_EU['region'].apply(lambda x: x.get('province'))
 covid_df_EU = covid_df_EU[covid_df_EU['province'] != 'Unknown']
 
