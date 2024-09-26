@@ -9,6 +9,7 @@ import plotly.express as px
 import numpy 
 import numpy as np
 
+
 url = "https://covid-19-statistics.p.rapidapi.com/reports"
 
 headers = {
@@ -31,6 +32,12 @@ country_names = {
     'LTU': 'Litouwen','LUX': 'Luxemburg','MLT': 'Malta','NLD': 'Nederland','AUT': 'Oostenrijk','POL': 'Polen','PRT': 'Portugal',
     'ROU': 'Roemenië','SVN': 'Slovenië','SVK': 'Slovakije','ESP': 'Spanje','CZE': 'Tsjechië','SWE': 'Zweden'
 }
+
+# ======================================================================================================================================== #
+st.title("""*COVID-19 Data* van 08 en 09 Maart 2023 voor EU-Landen""")
+
+st.write("""Tijdens de pandemie is het bijhouden van data cruciaal geweest om inzicht te krijgen in de verspreiding en impact van COVID-19 in verschillende regio’s. In dit project hebben we een interactieve data-visualisatie ontwikkeld met behulp van Python en de Streamlit-bibliotheek. Ons doel was om gebruikers de mogelijkheid te geven om de COVID-19-gevallen en sterfgevallen in verschillende Europese landen en hun provincies te verkennen.""")
+st.write("""Hiervoor hebben we als eerst een grafiek gecreëerd die het aantal gediagnosticeerde gevallen en sterfgevallen per land en provincie toont. Gebruikers kunnen zelf kiezen welke data ze willen bekijken, zowel de gediagnosticeerde gevallen als de sterfgevallen, of slechts één van beide datasets. Op deze manier kunnen gebruikers eenvoudig de verspreiding van COVID-19 binnen specifieke regio's analyseren.""")
 
 # ======================================================================================================================================== #
 
@@ -99,6 +106,13 @@ st.plotly_chart(fig)
 
 # =================================================================================================================================== #
 
+st.header("""Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU""")
+st.write("""De verspreiding van COVID-19 blijft een belangrijke zorg in Europa, waarbij overheden en gezondheidsautoriteiten nauwlettend de dagelijkse stijgingen in besmettingen en sterfgevallen volgen. De onderstaande grafiek biedt een inzichtelijke vergelijking van de procentuele toename van actieve COVID-19-gevallen, bevestigde besmettingen, en sterfgevallen per provincie, tussen 8 en 9 maart 2023.""")
+st.write("""Door deze gegevens te analyseren, krijgen we een duidelijker beeld van welke provincies in verschillende landen het hardst worden getroffen door de pandemie. Dit kan beleidsmakers helpen om beter geïnformeerde beslissingen te nemen over interventies en middelen.""")
+st.write("""Kies hieronder een land en een provincie om de specifieke stijgingspercentages te bekijken. De kleuren in de grafiek geven de stijgingen weer: blauw voor actieve gevallen, oranje voor bevestigde besmettingen, en rood voor sterfgevallen.""")
+
+# =================================================================================================================================== #
+
 covid_df_EU_con_diff = covid_df_EU[['province', 'country_name', 'confirmed', 'confirmed_diff']].copy()
 covid_df_EU_con_diff['2023-03-08'] = covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['confirmed_diff']
 covid_df_EU_con_diff['confirmed_increase_%'] = (((covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['2023-03-08']) / covid_df_EU_con_diff['2023-03-08']) * 100)
@@ -130,7 +144,7 @@ covid_df_EU_increase_pct = covid_df_EU_act_diff[['province', 'country_name', 'ac
 covid_df_EU_increase_pct = covid_df_EU_increase_pct.reindex(
     columns=['country_name', 'province', 'active_increase_%', 'confirmed_increase_%', 'deaths_increase_%'])
 
-st.title('COVID-19 Increase Percentage Dashboard')
+st.header('COVID-19 Toename Percentage Dashboard')
 
 selected_country_checkbox = st.selectbox('Selecteer een land', covid_df_EU_increase_pct['country_name'].unique())
 
@@ -172,6 +186,14 @@ if not province_data_checkbox.empty:
         st.plotly_chart(fig_check)
 
 # ================================================================================================================================== #
+
+st.header("""Analyse van COVID-19: Gediagnosticeerde Gevallen versus Sterfgevallen""")
+st.write("""Het verloop van de COVID-19-pandemie kan per regio sterk verschillen, afhankelijk van verschillende factoren zoals bevolkingsdichtheid, zorgcapaciteit en overheidsmaatregelen. Het begrijpen van deze regionale verschillen is essentieel voor zowel beleidsmakers als gezondheidsautoriteiten.""")
+st.write("""De onderstaande grafiek biedt een visuele weergave van het aantal gediagnosticeerde gevallen in verhouding tot het aantal sterfgevallen in Europese provincies, op zowel 8 als 9 maart 2023. De data per dag zijn apart weergegeven, en met de slider kunt u eenvoudig schakelen tussen beide datums. Elke marker vertegenwoordigt een provincie, en de positie ervan toont hoe deze zich verhoudt tot de andere provincies.""")
+st.write("""Door deze informatie te visualiseren, wordt het mogelijk om trends te ontdekken en provincies te identificeren waar sterfgevallen in verhouding tot gediagnosticeerde gevallen hoger zijn, of waar de stijging in besmettingen significant is. Dit type inzicht kan bijdragen aan meer gerichte interventies in de strijd tegen COVID-19.""")
+
+# =================================================================================================================================== #
+
 covid_df_EU_slider = covid_df_EU[['country_name', 'province']].merge(
     covid_df_EU_con_diff[['province', 'country_name', '2023-03-08', '2023-03-09']],
     on=['province', 'country_name'],
