@@ -760,7 +760,7 @@ elif blog_post == 'Vertraging in de wereld':
         </div>
         '''
 
-    # Add the HTML for the legend to the map
+    # Add the HTML for the legend to the map.
     m.get_root().html.add_child(folium.Element(legend_html))
 
     # Opslaan as HTML string
