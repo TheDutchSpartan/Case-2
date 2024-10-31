@@ -13,7 +13,7 @@ import numpy as np
 st.sidebar.title('Blog categorieën')
 blog_post = st.sidebar.selectbox(
     'Selecteer een onderwerp',
-    ('Introductie', 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU', 'Informatie over vertraging', 'Voorspellingsmodel voor vertraging', 'Data kwaliteit'))
+    ('Introductie', 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU', 'Procentuele Toename van COVID-19', 'Gediagnosticeerde Gevallen versus Sterfgevallen', 'Data kwaliteit'))
 # API URL for COVID-19 statistics
 url = "https://covid-19-statistics.p.rapidapi.com/reports"
 # Headers for the API request with API key
