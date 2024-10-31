@@ -148,7 +148,7 @@ if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in d
 
 # =================================================================================================================================== #
 #Doormiddel van streamlit schrijven we headers en een stuk tekst
-if blog_post =='Procentuele Toename van COVID-19':
+
     st.header("""Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU""")
     st.write("""De verspreiding van COVID-19 blijft een belangrijke zorg in Europa, waarbij overheden en gezondheidsautoriteiten nauwlettend de dagelijkse stijgingen in besmettingen en sterfgevallen volgen. De onderstaande grafiek biedt een inzichtelijke vergelijking van de procentuele toename van actieve COVID-19-gevallen, bevestigde besmettingen, en sterfgevallen per provincie, tussen 8 en 9 maart 2023.""")
     st.write("""Door deze gegevens te analyseren, krijgen we een duidelijker beeld van welke provincies in verschillende landen het hardst worden getroffen door de pandemie. Dit kan beleidsmakers helpen om beter geïnformeerde beslissingen te nemen over interventies en middelen.""")
