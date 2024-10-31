@@ -41,7 +41,7 @@ country_names = {
 
 # ======================================================================================================================================== #
 # Title and introduction sectie voor de Streamlit app
-if blogpost == 'Introductie'
+if blogpost == 'Introductie':
 st.title("""*COVID-19 Data* van 08 en 09 Maart 2023 voor EU-Landen""")
 
 st.write("""Tijdens de pandemie is het bijhouden van data cruciaal geweest om inzicht te krijgen in de verspreiding en impact van COVID-19 in verschillende regio’s. In dit project hebben we een interactieve data-visualisatie ontwikkeld met behulp van Python en de Streamlit-bibliotheek. Ons doel was om gebruikers de mogelijkheid te geven om de COVID-19-gevallen en sterfgevallen in verschillende Europese landen en hun provincies te verkennen.""")
@@ -68,6 +68,8 @@ Het dashboard is ontworpen om overheden, gezondheidsautoriteiten en burgers te h
 """)
 
 # ======================================================================================================================================== #
+# if blogpost == '
+
 # Verzamelen van COVID-19 data voor elk EU country terwijl we gebruik maken van de API
 EU_data = []
 for country_code in country_code_EU:
