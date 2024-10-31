@@ -38,41 +38,41 @@ country_names = {
     'ROU': 'Roemenië','SVN': 'Slovenië','SVK': 'Slovakije','ESP': 'Spanje','CZE': 'Tsjechië','SWE': 'Zweden'
 }
     #Makan van een dataframe voor verzamelen van data
- EU_data = []
-    for country_code in country_code_EU:
-        querystring_EU = {'iso':country_code}
-        response_EU = requests.get(url, headers=headers, params=querystring_EU)
-        data_EU = response_EU.json()
-    #Checken of de data beschikbaar is om samentevoegen met de EU_data list
-        if 'data' in data_EU:
-            for report in data_EU['data']:
-                report['country'] = country_code
-                report['country_name'] = country_names[country_code]
-                EU_data.append(report)
-    
-    #Makan van een dataframe voor verzamelen van data 
-    covid_df_EU = pd.DataFrame(EU_data)
-    covid_df_EU.set_index('country', inplace = True)
-    
-    # Zoekt naar missende data
-    missing_data = covid_df_EU.isnull().sum()
-    missing_data_count = missing_data.sum()
-    
-    # Toont missende data
-    st.subheader('Missende Data Overzicht')
-    #Boolean statement voor weergave betreft missende waardes
-    if missing_data_count == 0:
-        st.write('Geen missende data gevonden. Alle onderdelen zijn compleet.')
-    else:
-        st.write(' een overzicht van de missende data in de dataset:')
-        st.dataframe(missing_data)
-    # Extract province data en haalt de entries weg waar province is 'Unknown'
-    covid_df_EU['province'] = covid_df_EU['region'].apply(lambda x: x.get('province'))
-    covid_df_EU = covid_df_EU[covid_df_EU['province'] != 'Unknown']
-    # Groepeer de data bij province en calculate de som van confirmed cases en deaths
-    province_data_EU = covid_df_EU.groupby(['province', 'country_name']).agg({'confirmed': 'sum', 'deaths': 'sum', 'fatality_rate': 'mean'}).reset_index()
-    province_data_EU = province_data_EU.reindex(columns=['country_name', 'province', 'confirmed', 'deaths', 'fatality_rate'])
-    province_data_EU = province_data_EU.sort_values(by='country_name', ascending=True)
+EU_data = []
+for country_code in country_code_EU:
+    querystring_EU = {'iso':country_code}
+    response_EU = requests.get(url, headers=headers, params=querystring_EU)
+    data_EU = response_EU.json()
+#Checken of de data beschikbaar is om samentevoegen met de EU_data list
+    if 'data' in data_EU:
+        for report in data_EU['data']:
+            report['country'] = country_code
+            report['country_name'] = country_names[country_code]
+            EU_data.append(report)
+
+#Makan van een dataframe voor verzamelen van data 
+covid_df_EU = pd.DataFrame(EU_data)
+covid_df_EU.set_index('country', inplace = True)
+
+# Zoekt naar missende data
+missing_data = covid_df_EU.isnull().sum()
+missing_data_count = missing_data.sum()
+
+# Toont missende data
+st.subheader('Missende Data Overzicht')
+#Boolean statement voor weergave betreft missende waardes
+if missing_data_count == 0:
+    st.write('Geen missende data gevonden. Alle onderdelen zijn compleet.')
+else:
+    st.write(' een overzicht van de missende data in de dataset:')
+    st.dataframe(missing_data)
+# Extract province data en haalt de entries weg waar province is 'Unknown'
+covid_df_EU['province'] = covid_df_EU['region'].apply(lambda x: x.get('province'))
+covid_df_EU = covid_df_EU[covid_df_EU['province'] != 'Unknown']
+# Groepeer de data bij province en calculate de som van confirmed cases en deaths
+province_data_EU = covid_df_EU.groupby(['province', 'country_name']).agg({'confirmed': 'sum', 'deaths': 'sum', 'fatality_rate': 'mean'}).reset_index()
+province_data_EU = province_data_EU.reindex(columns=['country_name', 'province', 'confirmed', 'deaths', 'fatality_rate'])
+province_data_EU = province_data_EU.sort_values(by='country_name', ascending=True)
 covid_df_EU = pd.DataFrame(EU_data)
 covid_df_EU.set_index('country', inplace = True)
 # ======================================================================================================================================== #
