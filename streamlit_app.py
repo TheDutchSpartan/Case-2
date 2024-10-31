@@ -37,42 +37,8 @@ country_names = {
     'LTU': 'Litouwen','LUX': 'Luxemburg','MLT': 'Malta','NLD': 'Nederland','AUT': 'Oostenrijk','POL': 'Polen','PRT': 'Portugal',
     'ROU': 'Roemenië','SVN': 'Slovenië','SVK': 'Slovakije','ESP': 'Spanje','CZE': 'Tsjechië','SWE': 'Zweden'
 }
-    #Makan van een dataframe voor verzamelen van data 
-covid_df_EU = pd.DataFrame(EU_data)
-covid_df_EU.set_index('country', inplace = True)
-# ======================================================================================================================================== #
-# Title and introduction sectie voor de Streamlit app
-if blog_post == 'Introductie':
-    st.title("""*COVID-19 Data* van 08 en 09 Maart 2023 voor EU-Landen""")
-    
-    st.write("""Tijdens de pandemie is het bijhouden van data cruciaal geweest om inzicht te krijgen in de verspreiding en impact van COVID-19 in verschillende regio’s. In dit project hebben we een interactieve data-visualisatie ontwikkeld met behulp van Python en de Streamlit-bibliotheek. Ons doel was om gebruikers de mogelijkheid te geven om de COVID-19-gevallen en sterfgevallen in verschillende Europese landen en hun provincies te verkennen.""")
-    st.write("""Hiervoor hebben we als eerst een grafiek gecreëerd die het aantal gediagnosticeerde gevallen en sterfgevallen per land en provincie toont. Gebruikers kunnen zelf kiezen welke data ze willen bekijken, zowel de gediagnosticeerde gevallen als de sterfgevallen, of slechts één van beide datasets. Op deze manier kunnen gebruikers eenvoudig de verspreiding van COVID-19 binnen specifieke regio's analyseren.""")
-    
-    st.title('Interactief COVID-19 Dashboard voor EU-landen')
-    
-    st.subheader('Introductie')
-    
-    st.write("""
-    Dit dashboard biedt een overzicht van de verspreiding van COVID-19 in verschillende Europese landen en hun provincies. Het doel van dit dashboard is om gebruikers te voorzien van actuele inzichten over het aantal bevestigde gevallen, sterfgevallen en de procentuele toename van COVID-19 in verschillende regio's.
-    
-    ### Functies van het dashboard:
-    1. **COVID-19 Gevallen en Sterfgevallen per Provincie**: Visualiseer het aantal bevestigde gevallen en sterfgevallen voor elke provincie in geselecteerde Europese landen. U kunt eenvoudig wisselen tussen landen om de data voor specifieke regio's te bekijken.
-    2. **Procentuele Toename per Dag**: Analyseer de procentuele toename van bevestigde gevallen, actieve gevallen en sterfgevallen tussen twee datums. Dit biedt inzicht in de snelheid waarmee het virus zich verspreidt in verschillende provincies.
-    3. **Gediagnosticeerde Gevallen vs. Sterfgevallen**: Vergelijk het aantal bevestigde gevallen met sterfgevallen in elke provincie. Deze visualisatie maakt het mogelijk om te zien welke regio’s harder zijn getroffen door de pandemie.
-       
-    ### Hoe het dashboard te gebruiken:
-    - Selecteer een **land** en **provincie** in de dropdown-menu’s om de data voor een specifieke regio te bekijken.
-    - Gebruik de **slider** om data voor verschillende datums te vergelijken.
-    - Vink opties aan of uit met de **checkboxes** om specifieke datapunten te tonen of te verbergen.
-    
-    Het dashboard is ontworpen om overheden, gezondheidsautoriteiten en burgers te helpen bij het beter begrijpen van de impact van COVID-19 in Europa. Door data te visualiseren, kunnen trends gemakkelijker worden geïdentificeerd, wat leidt tot beter geïnformeerde beslissingen.
-    """)
-
-# ======================================================================================================================================== #
-if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU':
-    st.header("""Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU""")
-    # Verzamelen van COVID-19 data voor elk EU country terwijl we gebruik maken van de API
-    EU_data = []
+    #Makan van een dataframe voor verzamelen van data
+ EU_data = []
     for country_code in country_code_EU:
         querystring_EU = {'iso':country_code}
         response_EU = requests.get(url, headers=headers, params=querystring_EU)
@@ -107,6 +73,41 @@ if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in d
     province_data_EU = covid_df_EU.groupby(['province', 'country_name']).agg({'confirmed': 'sum', 'deaths': 'sum', 'fatality_rate': 'mean'}).reset_index()
     province_data_EU = province_data_EU.reindex(columns=['country_name', 'province', 'confirmed', 'deaths', 'fatality_rate'])
     province_data_EU = province_data_EU.sort_values(by='country_name', ascending=True)
+covid_df_EU = pd.DataFrame(EU_data)
+covid_df_EU.set_index('country', inplace = True)
+# ======================================================================================================================================== #
+# Title and introduction sectie voor de Streamlit app
+if blog_post == 'Introductie':
+    st.title("""*COVID-19 Data* van 08 en 09 Maart 2023 voor EU-Landen""")
+    
+    st.write("""Tijdens de pandemie is het bijhouden van data cruciaal geweest om inzicht te krijgen in de verspreiding en impact van COVID-19 in verschillende regio’s. In dit project hebben we een interactieve data-visualisatie ontwikkeld met behulp van Python en de Streamlit-bibliotheek. Ons doel was om gebruikers de mogelijkheid te geven om de COVID-19-gevallen en sterfgevallen in verschillende Europese landen en hun provincies te verkennen.""")
+    st.write("""Hiervoor hebben we als eerst een grafiek gecreëerd die het aantal gediagnosticeerde gevallen en sterfgevallen per land en provincie toont. Gebruikers kunnen zelf kiezen welke data ze willen bekijken, zowel de gediagnosticeerde gevallen als de sterfgevallen, of slechts één van beide datasets. Op deze manier kunnen gebruikers eenvoudig de verspreiding van COVID-19 binnen specifieke regio's analyseren.""")
+    
+    st.title('Interactief COVID-19 Dashboard voor EU-landen')
+    
+    st.subheader('Introductie')
+    
+    st.write("""
+    Dit dashboard biedt een overzicht van de verspreiding van COVID-19 in verschillende Europese landen en hun provincies. Het doel van dit dashboard is om gebruikers te voorzien van actuele inzichten over het aantal bevestigde gevallen, sterfgevallen en de procentuele toename van COVID-19 in verschillende regio's.
+    
+    ### Functies van het dashboard:
+    1. **COVID-19 Gevallen en Sterfgevallen per Provincie**: Visualiseer het aantal bevestigde gevallen en sterfgevallen voor elke provincie in geselecteerde Europese landen. U kunt eenvoudig wisselen tussen landen om de data voor specifieke regio's te bekijken.
+    2. **Procentuele Toename per Dag**: Analyseer de procentuele toename van bevestigde gevallen, actieve gevallen en sterfgevallen tussen twee datums. Dit biedt inzicht in de snelheid waarmee het virus zich verspreidt in verschillende provincies.
+    3. **Gediagnosticeerde Gevallen vs. Sterfgevallen**: Vergelijk het aantal bevestigde gevallen met sterfgevallen in elke provincie. Deze visualisatie maakt het mogelijk om te zien welke regio’s harder zijn getroffen door de pandemie.
+       
+    ### Hoe het dashboard te gebruiken:
+    - Selecteer een **land** en **provincie** in de dropdown-menu’s om de data voor een specifieke regio te bekijken.
+    - Gebruik de **slider** om data voor verschillende datums te vergelijken.
+    - Vink opties aan of uit met de **checkboxes** om specifieke datapunten te tonen of te verbergen.
+    
+    Het dashboard is ontworpen om overheden, gezondheidsautoriteiten en burgers te helpen bij het beter begrijpen van de impact van COVID-19 in Europa. Door data te visualiseren, kunnen trends gemakkelijker worden geïdentificeerd, wat leidt tot beter geïnformeerde beslissingen.
+    """)
+
+# ======================================================================================================================================== #
+if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU':
+    st.header("""Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU""")
+    # Verzamelen van COVID-19 data voor elk EU country terwijl we gebruik maken van de API
+   
     #Plotly figure
     fig = go.Figure()
     # Toevoegen van Bar traces voor de comfirmed cases en deaths for elke land
