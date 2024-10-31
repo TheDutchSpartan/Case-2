@@ -68,7 +68,7 @@ if blog_post == 'Introductie':
 
 # ======================================================================================================================================== #
 if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU':
-     st.header("""Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU""")
+    st.header("""Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU""")
     # Verzamelen van COVID-19 data voor elk EU country terwijl we gebruik maken van de API
     EU_data = []
     for country_code in country_code_EU:
