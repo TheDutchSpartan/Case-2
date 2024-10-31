@@ -73,8 +73,53 @@ covid_df_EU = covid_df_EU[covid_df_EU['province'] != 'Unknown']
 province_data_EU = covid_df_EU.groupby(['province', 'country_name']).agg({'confirmed': 'sum', 'deaths': 'sum', 'fatality_rate': 'mean'}).reset_index()
 province_data_EU = province_data_EU.reindex(columns=['country_name', 'province', 'confirmed', 'deaths', 'fatality_rate'])
 province_data_EU = province_data_EU.sort_values(by='country_name', ascending=True)
-covid_df_EU = pd.DataFrame(EU_data)
-covid_df_EU.set_index('country', inplace = True)
+# Berekend verhoogde percentage voor confirmed cases, deaths, en active cases
+covid_df_EU_con_diff = covid_df_EU[['province', 'country_name', 'confirmed', 'confirmed_diff']].copy()
+covid_df_EU_con_diff['2023-03-08'] = covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['confirmed_diff']
+covid_df_EU_con_diff['confirmed_increase_%'] = (((covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['2023-03-08']) / covid_df_EU_con_diff['2023-03-08']) * 100)
+covid_df_EU_con_diff.rename(columns={'confirmed':'2023-03-09'}, inplace=True)
+covid_df_EU_con_diff = covid_df_EU_con_diff.reindex(columns=['country_name', 'province', 'confirmed_diff','confirmed_increase_%', '2023-03-08', '2023-03-09',])
+#herhalen van soortgelijke berekeningen voor de deaths en active cases
+covid_df_EU_dea_diff = covid_df_EU[['province', 'country_name', 'deaths', 'deaths_diff']].copy()
+covid_df_EU_dea_diff['2023-03-08'] = covid_df_EU_dea_diff['deaths'] - covid_df_EU_dea_diff['deaths_diff']
+covid_df_EU_dea_diff['deaths_increase_%'] = (((covid_df_EU_dea_diff['deaths'] - covid_df_EU_dea_diff['2023-03-08']) / covid_df_EU_dea_diff['2023-03-08']) * 100)
+covid_df_EU_dea_diff.rename(columns={'deaths':'2023-03-09'}, inplace=True)
+covid_df_EU_dea_diff = covid_df_EU_dea_diff.reindex(columns=['country_name', 'province', 'deaths_diff', 'deaths_increase_%', '2023-03-08', '2023-03-09'])
+covid_df_EU_dea_diff['deaths_increase_%'] = covid_df_EU_dea_diff['deaths_increase_%'].fillna(0)
+
+covid_df_EU_act_diff = covid_df_EU[['province', 'country_name', 'active', 'active_diff']].copy()
+covid_df_EU_act_diff['2023-03-08'] = covid_df_EU_act_diff['active'] - covid_df_EU_act_diff['active_diff']
+covid_df_EU_act_diff['active_increase_%'] = (((covid_df_EU_act_diff['active'] - covid_df_EU_act_diff['2023-03-08']) / covid_df_EU_act_diff['2023-03-08']) * 100)
+covid_df_EU_act_diff.rename(columns={'active':'2023-03-09'}, inplace=True)
+covid_df_EU_act_diff = covid_df_EU_act_diff.reindex(columns=['country_name', 'province', 'active_diff', 'active_increase_%', '2023-03-08', '2023-03-09'])
+covid_df_EU_act_diff['active_increase_%'] = covid_df_EU_act_diff['active_increase_%'].fillna(0)
+#Samenvoegen van de data in een dataframe voor toename percentage
+covid_df_EU_increase_pct = covid_df_EU_act_diff[['province', 'country_name', 'active_increase_%']].merge(
+    covid_df_EU_con_diff[['province', 'country_name', 'confirmed_increase_%']],
+    on=['province', 'country_name'],
+    how='inner').merge(
+        covid_df_EU_dea_diff[['province', 'country_name', 'deaths_increase_%']],
+        on=['province', 'country_name'],
+        how='inner'
+    )
+# Herschikken van de kolommen in de dataset
+covid_df_EU_increase_pct = covid_df_EU_increase_pct.reindex(
+    columns=['country_name', 'province', 'active_increase_%', 'confirmed_increase_%', 'deaths_increase_%'])
+# Titel voor het dashboard
+st.header('COVID-19 Toename Percentage Dashboard')
+# Dropdown voor het selecteren van een land
+selected_country_checkbox = st.selectbox('Selecteer een land', covid_df_EU_increase_pct['country_name'].unique())
+# Filteren van de dataset op basis van het geselecteerde land
+filtered_df = covid_df_EU_increase_pct[covid_df_EU_increase_pct['country_name'] == selected_country_checkbox]
+# Dropdown voor het selecteren van een provincie binnen het geselecteerde land
+selected_province_checkbox = st.selectbox('Selecteer een provincie', filtered_df['province'].unique())
+# Filteren van de dataset op basis van de geselecteerde provincie
+province_data_checkbox = filtered_df[filtered_df['province'] == selected_province_checkbox]
+# Controle of er data beschikbaar is voor de geselecteerde provincie
+if not province_data_checkbox.empty:
+    # Dutch translations for the x-axis labels
+    labels = ['Actieve Toename (%)', 'Gediagnosticeerde Toename (%)', 'Sterfgevallen Toename (%)']
+    values = province_data_checkbox[['active_increase_%', 'confirmed_increase_%', 'deaths_increase_%']].values[0]
 # ======================================================================================================================================== #
 # Title and introduction sectie voor de Streamlit app
 if blog_post == 'Introductie':
@@ -158,53 +203,7 @@ if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in d
     st.write("""Kies hieronder een land en een provincie om de specifieke stijgingspercentages te bekijken. De kleuren in de grafiek geven de stijgingen weer: blauw voor actieve gevallen, oranje voor bevestigde besmettingen, en rood voor sterfgevallen.""")
     
     # =================================================================================================================================== #
-    # Berekend verhoogde percentage voor confirmed cases, deaths, en active cases
-    covid_df_EU_con_diff = covid_df_EU[['province', 'country_name', 'confirmed', 'confirmed_diff']].copy()
-    covid_df_EU_con_diff['2023-03-08'] = covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['confirmed_diff']
-    covid_df_EU_con_diff['confirmed_increase_%'] = (((covid_df_EU_con_diff['confirmed'] - covid_df_EU_con_diff['2023-03-08']) / covid_df_EU_con_diff['2023-03-08']) * 100)
-    covid_df_EU_con_diff.rename(columns={'confirmed':'2023-03-09'}, inplace=True)
-    covid_df_EU_con_diff = covid_df_EU_con_diff.reindex(columns=['country_name', 'province', 'confirmed_diff','confirmed_increase_%', '2023-03-08', '2023-03-09',])
-    #herhalen van soortgelijke berekeningen voor de deaths en active cases
-    covid_df_EU_dea_diff = covid_df_EU[['province', 'country_name', 'deaths', 'deaths_diff']].copy()
-    covid_df_EU_dea_diff['2023-03-08'] = covid_df_EU_dea_diff['deaths'] - covid_df_EU_dea_diff['deaths_diff']
-    covid_df_EU_dea_diff['deaths_increase_%'] = (((covid_df_EU_dea_diff['deaths'] - covid_df_EU_dea_diff['2023-03-08']) / covid_df_EU_dea_diff['2023-03-08']) * 100)
-    covid_df_EU_dea_diff.rename(columns={'deaths':'2023-03-09'}, inplace=True)
-    covid_df_EU_dea_diff = covid_df_EU_dea_diff.reindex(columns=['country_name', 'province', 'deaths_diff', 'deaths_increase_%', '2023-03-08', '2023-03-09'])
-    covid_df_EU_dea_diff['deaths_increase_%'] = covid_df_EU_dea_diff['deaths_increase_%'].fillna(0)
     
-    covid_df_EU_act_diff = covid_df_EU[['province', 'country_name', 'active', 'active_diff']].copy()
-    covid_df_EU_act_diff['2023-03-08'] = covid_df_EU_act_diff['active'] - covid_df_EU_act_diff['active_diff']
-    covid_df_EU_act_diff['active_increase_%'] = (((covid_df_EU_act_diff['active'] - covid_df_EU_act_diff['2023-03-08']) / covid_df_EU_act_diff['2023-03-08']) * 100)
-    covid_df_EU_act_diff.rename(columns={'active':'2023-03-09'}, inplace=True)
-    covid_df_EU_act_diff = covid_df_EU_act_diff.reindex(columns=['country_name', 'province', 'active_diff', 'active_increase_%', '2023-03-08', '2023-03-09'])
-    covid_df_EU_act_diff['active_increase_%'] = covid_df_EU_act_diff['active_increase_%'].fillna(0)
-    #Samenvoegen van de data in een dataframe voor toename percentage
-    covid_df_EU_increase_pct = covid_df_EU_act_diff[['province', 'country_name', 'active_increase_%']].merge(
-        covid_df_EU_con_diff[['province', 'country_name', 'confirmed_increase_%']],
-        on=['province', 'country_name'],
-        how='inner').merge(
-            covid_df_EU_dea_diff[['province', 'country_name', 'deaths_increase_%']],
-            on=['province', 'country_name'],
-            how='inner'
-        )
-    # Herschikken van de kolommen in de dataset
-    covid_df_EU_increase_pct = covid_df_EU_increase_pct.reindex(
-        columns=['country_name', 'province', 'active_increase_%', 'confirmed_increase_%', 'deaths_increase_%'])
-    # Titel voor het dashboard
-    st.header('COVID-19 Toename Percentage Dashboard')
-    # Dropdown voor het selecteren van een land
-    selected_country_checkbox = st.selectbox('Selecteer een land', covid_df_EU_increase_pct['country_name'].unique())
-    # Filteren van de dataset op basis van het geselecteerde land
-    filtered_df = covid_df_EU_increase_pct[covid_df_EU_increase_pct['country_name'] == selected_country_checkbox]
-    # Dropdown voor het selecteren van een provincie binnen het geselecteerde land
-    selected_province_checkbox = st.selectbox('Selecteer een provincie', filtered_df['province'].unique())
-    # Filteren van de dataset op basis van de geselecteerde provincie
-    province_data_checkbox = filtered_df[filtered_df['province'] == selected_province_checkbox]
-    # Controle of er data beschikbaar is voor de geselecteerde provincie
-    if not province_data_checkbox.empty:
-        # Dutch translations for the x-axis labels
-        labels = ['Actieve Toename (%)', 'Gediagnosticeerde Toename (%)', 'Sterfgevallen Toename (%)']
-        values = province_data_checkbox[['active_increase_%', 'confirmed_increase_%', 'deaths_increase_%']].values[0]
     # Aanmaken van een staafdiagram met plotly
         fig_check = go.Figure()
     # Toevoegen van data aan de staafdiagram
