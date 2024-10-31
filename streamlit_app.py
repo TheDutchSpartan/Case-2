@@ -37,7 +37,9 @@ country_names = {
     'LTU': 'Litouwen','LUX': 'Luxemburg','MLT': 'Malta','NLD': 'Nederland','AUT': 'Oostenrijk','POL': 'Polen','PRT': 'Portugal',
     'ROU': 'Roemenië','SVN': 'Slovenië','SVK': 'Slovakije','ESP': 'Spanje','CZE': 'Tsjechië','SWE': 'Zweden'
 }
-
+    #Makan van een dataframe voor verzamelen van data 
+covid_df_EU = pd.DataFrame(EU_data)
+covid_df_EU.set_index('country', inplace = True)
 # ======================================================================================================================================== #
 # Title and introduction sectie voor de Streamlit app
 if blog_post == 'Introductie':
