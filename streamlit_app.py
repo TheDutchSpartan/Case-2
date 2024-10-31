@@ -204,32 +204,32 @@ if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in d
     
     # =================================================================================================================================== #
     
-    # Aanmaken van een staafdiagram met plotly
-        fig_check = go.Figure()
-    # Toevoegen van data aan de staafdiagram
-        fig_check.add_trace(go.Bar(
-            x=labels, 
-            y=values,
-            marker_color=['blue', 'orange', 'red']
-        ))
-    # Layout van de grafiek instellen
-        fig_check.update_layout(
-            title=f'Toename in Percentage voor {selected_province_checkbox}',
-            xaxis_title='Meting',
-            yaxis_title='Percentage',
-            template='plotly_white',
-            showlegend=False
-        )
-     #Display naam instellen op basis van de geselecteerde land of provincie
-        if selected_province_checkbox == "":
-            display_name = selected_country_checkbox
-        else:
-            display_name = selected_province_checkbox
-    # Controle of alle waardes nul zijn (geen toename in data)
-        if np.all(values == 0):
-            st.write(f'Geen toename van covid-19 percentages bekend in {display_name} tussen de dagen 08-03-2023 en 09-03-2023')
-        else:
-            st.plotly_chart(fig_check)
+# Aanmaken van een staafdiagram met plotly
+    fig_check = go.Figure()
+# Toevoegen van data aan de staafdiagram
+    fig_check.add_trace(go.Bar(
+        x=labels, 
+        y=values,
+        marker_color=['blue', 'orange', 'red']
+    ))
+# Layout van de grafiek instellen
+    fig_check.update_layout(
+        title=f'Toename in Percentage voor {selected_province_checkbox}',
+        xaxis_title='Meting',
+        yaxis_title='Percentage',
+        template='plotly_white',
+        showlegend=False
+    )
+ #Display naam instellen op basis van de geselecteerde land of provincie
+    if selected_province_checkbox == "":
+        display_name = selected_country_checkbox
+    else:
+        display_name = selected_province_checkbox
+# Controle of alle waardes nul zijn (geen toename in data)
+    if np.all(values == 0):
+        st.write(f'Geen toename van covid-19 percentages bekend in {display_name} tussen de dagen 08-03-2023 en 09-03-2023')
+    else:
+        st.plotly_chart(fig_check)
 
 # ================================================================================================================================== #
 # Titel en text voor de tweede sectie van de analyse doormiddel van streamlit
