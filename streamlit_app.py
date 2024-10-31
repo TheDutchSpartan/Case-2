@@ -69,82 +69,82 @@ if blog_post == 'Introductie':
 # ======================================================================================================================================== #
 if blog_post == 'Procentuele Toename van COVID-19 Gevallen en Sterfgevallen in de EU':
 
-# Verzamelen van COVID-19 data voor elk EU country terwijl we gebruik maken van de API
-EU_data = []
-for country_code in country_code_EU:
-    querystring_EU = {'iso':country_code}
-    response_EU = requests.get(url, headers=headers, params=querystring_EU)
-    data_EU = response_EU.json()
-#Checken of de data beschikbaar is om samentevoegen met de EU_data list
-    if 'data' in data_EU:
-        for report in data_EU['data']:
-            report['country'] = country_code
-            report['country_name'] = country_names[country_code]
-            EU_data.append(report)
-
-#Makan van een dataframe voor verzamelen van data 
-covid_df_EU = pd.DataFrame(EU_data)
-covid_df_EU.set_index('country', inplace = True)
-
-# Zoekt naar missende data
-missing_data = covid_df_EU.isnull().sum()
-missing_data_count = missing_data.sum()
-
-# Toont missende data
-st.subheader('Missende Data Overzicht')
-#Boolean statement voor weergave betreft missende waardes
-if missing_data_count == 0:
-    st.write('Geen missende data gevonden. Alle onderdelen zijn compleet.')
-else:
-    st.write(' een overzicht van de missende data in de dataset:')
-    st.dataframe(missing_data)
-# Extract province data en haalt de entries weg waar province is 'Unknown'
-covid_df_EU['province'] = covid_df_EU['region'].apply(lambda x: x.get('province'))
-covid_df_EU = covid_df_EU[covid_df_EU['province'] != 'Unknown']
-# Groepeer de data bij province en calculate de som van confirmed cases en deaths
-province_data_EU = covid_df_EU.groupby(['province', 'country_name']).agg({'confirmed': 'sum', 'deaths': 'sum', 'fatality_rate': 'mean'}).reset_index()
-province_data_EU = province_data_EU.reindex(columns=['country_name', 'province', 'confirmed', 'deaths', 'fatality_rate'])
-province_data_EU = province_data_EU.sort_values(by='country_name', ascending=True)
-#Plotly figure
-fig = go.Figure()
-# Toevoegen van Bar traces voor de comfirmed cases en deaths for elke land
-for country in province_data_EU['country_name'].unique():
-    province_data_EU_filtered = province_data_EU[province_data_EU['country_name'] == country]
-    fig.add_trace(go.Bar(x=province_data_EU_filtered['province'],
-                        y=province_data_EU_filtered['confirmed'],
-                        name=f'{country} gediagnosticeerde',
-                        visible=False,
-                        marker_color='blue'))
-    fig.add_trace(go.Bar(x=province_data_EU_filtered['province'],
-                        y=province_data_EU_filtered['deaths'],
-                        name=f'{country} sterfgevallen',
-                        visible=False,
-                        marker_color='red'))
-#Dit maakt het eerste land zijn data visible by defeault
-fig.data[0].visible=True
-fig.data[1].visible=True
-# Dropdown menu voor kiezen van verschillende landen
-dropdown_buttons = []
-
-for country in province_data_EU['country_name'].unique():
-    dropdown_buttons.append({
-        'label':country,
-        'method':'update',
-        'args':[{'visible': [name.startswith(country) for name in [trace.name for trace in fig.data]]},
-        {'title':f'COVID-19 Gegevens voor {country}'}]
-    })
-# Update layout voor het plotly figuur, met een dropdown en titles
-fig.update_layout(
-    title = 'COVID-19 Gediagnosticeerde en Sterfgevallen per Provincie',
-    xaxis_title = 'Provincie',
-    yaxis_title = 'Aantal',
-    barmode = 'group',
-    updatemenus = [{'buttons':dropdown_buttons,
-                    'showactive':True,
-                    'direction':'down'}]
-)
-#weergeven van plot in streamlit
-st.plotly_chart(fig)
+    # Verzamelen van COVID-19 data voor elk EU country terwijl we gebruik maken van de API
+    EU_data = []
+    for country_code in country_code_EU:
+        querystring_EU = {'iso':country_code}
+        response_EU = requests.get(url, headers=headers, params=querystring_EU)
+        data_EU = response_EU.json()
+    #Checken of de data beschikbaar is om samentevoegen met de EU_data list
+        if 'data' in data_EU:
+            for report in data_EU['data']:
+                report['country'] = country_code
+                report['country_name'] = country_names[country_code]
+                EU_data.append(report)
+    
+    #Makan van een dataframe voor verzamelen van data 
+    covid_df_EU = pd.DataFrame(EU_data)
+    covid_df_EU.set_index('country', inplace = True)
+    
+    # Zoekt naar missende data
+    missing_data = covid_df_EU.isnull().sum()
+    missing_data_count = missing_data.sum()
+    
+    # Toont missende data
+    st.subheader('Missende Data Overzicht')
+    #Boolean statement voor weergave betreft missende waardes
+    if missing_data_count == 0:
+        st.write('Geen missende data gevonden. Alle onderdelen zijn compleet.')
+    else:
+        st.write(' een overzicht van de missende data in de dataset:')
+        st.dataframe(missing_data)
+    # Extract province data en haalt de entries weg waar province is 'Unknown'
+    covid_df_EU['province'] = covid_df_EU['region'].apply(lambda x: x.get('province'))
+    covid_df_EU = covid_df_EU[covid_df_EU['province'] != 'Unknown']
+    # Groepeer de data bij province en calculate de som van confirmed cases en deaths
+    province_data_EU = covid_df_EU.groupby(['province', 'country_name']).agg({'confirmed': 'sum', 'deaths': 'sum', 'fatality_rate': 'mean'}).reset_index()
+    province_data_EU = province_data_EU.reindex(columns=['country_name', 'province', 'confirmed', 'deaths', 'fatality_rate'])
+    province_data_EU = province_data_EU.sort_values(by='country_name', ascending=True)
+    #Plotly figure
+    fig = go.Figure()
+    # Toevoegen van Bar traces voor de comfirmed cases en deaths for elke land
+    for country in province_data_EU['country_name'].unique():
+        province_data_EU_filtered = province_data_EU[province_data_EU['country_name'] == country]
+        fig.add_trace(go.Bar(x=province_data_EU_filtered['province'],
+                            y=province_data_EU_filtered['confirmed'],
+                            name=f'{country} gediagnosticeerde',
+                            visible=False,
+                            marker_color='blue'))
+        fig.add_trace(go.Bar(x=province_data_EU_filtered['province'],
+                            y=province_data_EU_filtered['deaths'],
+                            name=f'{country} sterfgevallen',
+                            visible=False,
+                            marker_color='red'))
+    #Dit maakt het eerste land zijn data visible by defeault
+    fig.data[0].visible=True
+    fig.data[1].visible=True
+    # Dropdown menu voor kiezen van verschillende landen
+    dropdown_buttons = []
+    
+    for country in province_data_EU['country_name'].unique():
+        dropdown_buttons.append({
+            'label':country,
+            'method':'update',
+            'args':[{'visible': [name.startswith(country) for name in [trace.name for trace in fig.data]]},
+            {'title':f'COVID-19 Gegevens voor {country}'}]
+        })
+    # Update layout voor het plotly figuur, met een dropdown en titles
+    fig.update_layout(
+        title = 'COVID-19 Gediagnosticeerde en Sterfgevallen per Provincie',
+        xaxis_title = 'Provincie',
+        yaxis_title = 'Aantal',
+        barmode = 'group',
+        updatemenus = [{'buttons':dropdown_buttons,
+                        'showactive':True,
+                        'direction':'down'}]
+    )
+    #weergeven van plot in streamlit
+    st.plotly_chart(fig)
 
 # =================================================================================================================================== #
 #Doormiddel van streamlit schrijven we headers en een stuk tekst
